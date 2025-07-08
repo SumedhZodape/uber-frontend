@@ -9,6 +9,7 @@ import UserLogin from './Pages/User/UserLogin';
 import UserHome from './Pages/User/UserHome';
 import CaptainLogin from './Pages/Captain/CaptainLogin';
 import CaptainHome from './Pages/Captain/CaptainHome';
+import CurrentTrip from './Pages/Captain/CurrentTrip';
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
 
           <Route path='/captain-login' element={<CaptainLogin/>}/>
           <Route path='/captain-home' element={<CaptainHome/>}/>
+          <Route path='/current-trip/:rideId' element={<CurrentTrip/>}/>
         </Routes>
       </BrowserRouter>
     </>

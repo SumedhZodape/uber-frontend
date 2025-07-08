@@ -102,7 +102,6 @@ const UserHome = () => {
   }, [selectedStartLocation, selectedEndLocation])
 
 
-
   /// book cab api integratin
   const BookCab = async() =>{
 
