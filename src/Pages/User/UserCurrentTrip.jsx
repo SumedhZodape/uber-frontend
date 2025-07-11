@@ -1,12 +1,16 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-export default function CurrentTrip() {
+export default function UserCurrentTrip() {
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
-    const location = useParams()
+    const location = useParams();
+
+    console.log(location)
     const [isLogin, setIsLogin] = React.useState(false);
     const [currentRide, setCurrentRide] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,17 +21,19 @@ export default function CurrentTrip() {
     // get current ride info
     const getCurrentRide = async () => {
         try {
-            const res = await axios.get(`http://localhost:8000/api/captain/get-accepted-ride/Accepted`, {
+            const res = await axios.get(`http://localhost:8000/api/user/get-ride-info`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
 
+            console.log(res)
+
             if (res.data?.result) {
-                const starL = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${res.data?.result[0]?.startLocation?.coordinates[0]}&lon=${res?.data?.result[0]?.startLocation?.coordinates[1]}&apiKey=e82755a4435446889f0f99a5a3f9c06f`)
-                const endL = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${res.data?.result[0]?.endLocation?.coordinates[0]}&lon=${res?.data?.result[0]?.endLocation?.coordinates[1]}&apiKey=e82755a4435446889f0f99a5a3f9c06f`)
+                const starL = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${res.data?.result?.startLocation?.coordinates[0]}&lon=${res?.data?.result?.startLocation?.coordinates[1]}&apiKey=e82755a4435446889f0f99a5a3f9c06f`)
+                const endL = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${res.data?.result?.endLocation?.coordinates[0]}&lon=${res?.data?.result?.endLocation?.coordinates[1]}&apiKey=e82755a4435446889f0f99a5a3f9c06f`)
                 setCurrentRide({
-                    ...res.data?.result[0],
+                    ...res.data?.result,
                     startLocation: `${starL?.data?.features[0]?.properties?.address_line1}, 
                 ${starL?.data?.features[0]?.properties?.city}`,
                     endLocation: `${endL?.data?.features[0]?.properties?.address_line1}, 
@@ -122,26 +128,6 @@ export default function CurrentTrip() {
                 </div>
             </div>
 
-            <div className='p-4'>
-                <div className='w-full border border-gray-300 rounded-md
-        flex flex-col gap-5 p-3 items-center justify-center' >
-                    <div className='text-white text-xs bg-black py-1 px-4 rounded-2xl'>{currentRide?.status}</div>
-                    <div className='w-full flex flex-col gap-3'>
-                        <div className='w-full h-4 bg-gray-200 rounded-xl overflow-hidden'>
-                            <div className={`h-4 w-[${currentRide?.status === "Accepted" ? '25%' :
-                                currentRide?.status === "Arrived" ? '50%' :
-                                    currentRide?.status === "Ride Started" ? '75%' : '100%'
-                                }] bg-green-500`}></div>
-                        </div>
-                        <div className='flex justify-between'>
-                            <p className='text-gray-500 text-sm'>Accepted</p>
-                            <p className='text-gray-500 text-sm'>Arrived</p>
-                            <p className='text-gray-500 text-sm'>Started</p>
-                            <p className='text-gray-500 text-sm'>Completed</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div className='p-4'>
                 <div className='w-full border border-gray-300 rounded-md
@@ -218,28 +204,13 @@ export default function CurrentTrip() {
 
 
             <div className='p-4'>
-                <button className='w-full py-3 bg-black text-white
-                rounded-md font-bold'
-                    onClick={() => {
-                        if (currentRide.status !== "Arrived") {
-                            updateRideStatus(
-                                currentRide.status === "Accepted" ? "Arrived" :
-                                    currentRide.status === "Arrived" ? "Ride Started" : "Completed"
-                            );
-                        }
-
-                        if (currentRide.status === "Arrived") {
-                            setIsModalOpen(true)
-                        }
-                    }}
-                >{
-                        currentRide?.status === "Accepted" ? "Arrived at Pickup" :
-                            currentRide?.status === "Arrived" ? "Ride Started" : "Completed"
-
-                    }</button>
-                <button className='w-full py-2 mt-3 bg-white text-gray-600
-                rounded-md border text-[14px] font-semibold border-gray-400 '><i className="fa-solid fa-location-dot mr-2"></i>Open in Maps</button>
+                <div className='w-full border border-gray-300 rounded-md
+                    flex flex-col gap-2 p-3 items-center' >
+                    <h2 className='text-3xl font-bold tracking-widest'>69876</h2>
+                    <p className='text-gray-500 text-[12px]'>OTP</p>
+                </div>
             </div>
+
 
 
             <div className='p-4'>
