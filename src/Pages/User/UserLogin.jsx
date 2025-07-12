@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';
+import { connectSocket } from '../../socket.js';
 
 export default function UserLogin() {
 
@@ -21,10 +22,11 @@ export default function UserLogin() {
 
     try {
       const res = await axios.post("http://localhost:8000/api/user/login", payload);
-      console.log(res)
       const response = res.data;
+      console.log(response)
       if(response){
         if(response.success === true){
+          connectSocket(response.userID)
           toast.success(response.message);
           localStorage.setItem('token', response.token)
           reset({})

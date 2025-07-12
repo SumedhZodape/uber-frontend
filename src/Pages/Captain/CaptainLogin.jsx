@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';
+import { connectSocket } from '../../socket.js';
 
 export default function CaptainLogin() {
 
@@ -25,8 +26,10 @@ export default function CaptainLogin() {
       const response = res.data;
       if(response){
         if(response.success === true){
+           connectSocket(response.userID)
           toast.success(response.message);
-          localStorage.setItem('token', response.token)
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('captainId', response.userID)
           reset({})
           navigate('/captain-home')
         }else{

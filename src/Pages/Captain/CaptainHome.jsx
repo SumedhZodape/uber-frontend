@@ -2,6 +2,7 @@ import React, { useState, useEffect, } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getSockect } from '../../socket.js';
 
 export default function CaptainHome() {
 
@@ -89,6 +90,19 @@ export default function CaptainHome() {
       getCurrentRide()
     },[])
   
+
+    useEffect(()=>{
+      const socket = getSockect();
+
+      if(socket){
+        socket.on('rideRequest', (data)=>{
+          console.log(data);
+          alert("New Ride Request...")
+        })
+      }
+
+    },[])
+
   return (
     <>
       <div className='p-4 flex justify-between bg-black'>
