@@ -12,4 +12,4 @@ export const connectSocket = (userId) =>{
     }
 }
 
-export const getSockect = () => socket;
+export const getSocket = () => socket;

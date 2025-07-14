@@ -2,9 +2,25 @@ import React, { useState, useEffect, } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { getSockect } from '../../socket.js';
+import { connectSocket, getSocket } from "../../socket";
 
 export default function CaptainHome() {
+
+  
+    useEffect(()=>{
+      const userId = localStorage.getItem('userID');
+      if(userId){
+        connectSocket(userId);
+        const socket = getSocket();
+        if(socket){
+          socket.on('sendNotification', (data)=>{
+          console.log(data);
+          // alert("New Ride Request...", data)
+          setupData(data?.ride)
+        })
+        }
+      }
+    },[])
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token')
@@ -62,6 +78,17 @@ export default function CaptainHome() {
     console.log(response.data)
 
     if (response?.data?.success) {
+
+        const socket = getSocket();
+      
+        if(socket){
+          socket.emit('acceptNotification', {
+                    from: "dasd",
+                    ride: response?.data,
+                    message:"Accepted Ride"
+          })
+        }
+      
       toast.success(response?.data?.message);
       navigate(`/current-trip/${rideId}`)
     }
@@ -91,17 +118,27 @@ export default function CaptainHome() {
     },[])
   
 
-    useEffect(()=>{
-      const socket = getSockect();
+  const setupData = async(response) =>{
+    const starL = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${response?.startLocation?.coordinates[0]}&lon=${response?.startLocation?.coordinates[1]}&apiKey=e82755a4435446889f0f99a5a3f9c06f`)
 
-      if(socket){
-        socket.on('rideRequest', (data)=>{
-          console.log(data);
-          alert("New Ride Request...")
+      console.log(starL?.data)
+
+      const endL = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${response?.endLocation?.coordinates[0]}&lon=${response?.endLocation?.coordinates[1]}&apiKey=e82755a4435446889f0f99a5a3f9c06f`)
+      console.log(endL?.data)
+
+      if (starL && endL) {
+        setModalData({
+          rideId: response?._id,
+          startLocation: `${starL?.data?.features[0]?.properties?.address_line1}, 
+          ${starL?.data?.features[0]?.properties?.city}`,
+          endLocation: `${endL?.data?.features[0]?.properties?.address_line1}, 
+          ${endL?.data?.features[0]?.properties?.city}`,
+          distance: response?.distance,
+          price: response?.price
         })
       }
-
-    },[])
+      setShowModal(true)
+  }
 
   return (
     <>

@@ -2,10 +2,27 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {  useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
+import { connectSocket, getSocket } from "../../socket";
 
 
 const UserHome = () => {
   const navigate = useNavigate()
+
+    useEffect(()=>{
+      const userId = localStorage.getItem('userID');
+      if(userId){
+        connectSocket(userId);
+        const socket = getSocket();
+        if(socket){
+          socket.on('acceptNotification', (data)=>{
+          console.log(data);
+          setRideSearchdModal(false);
+           navigate(`/user-current-trip/${data.ride._id}`)
+          // alert("New Ride Request...", data)
+        })
+        }
+      }
+    },[])
 
   // submit button logic
   const [locked, setLocked] = useState({ inp1: false, inp2: false });
@@ -139,12 +156,22 @@ const UserHome = () => {
             return toast.info(response.data.message)
           }
 
+          const socket = getSocket();
+
+          if(socket){
+            socket.emit('sendNotification', {
+              type:"rideBooked",
+              rideId: response.data._id,
+              message:"test"
+            })
+          }
+
           setRideSearchdModal(true)
-            setTimeout(()=>{
-              setRideSearchdModal(false)
-              navigate(`/user-current-trip/${response.data._id}`)
-            }, [60000])
-          console.log(response.data)
+          //   setTimeout(()=>{
+          //     setRideSearchdModal(false)
+          //     navigate(`/user-current-trip/${response.data._id}`)
+          //   }, [60000])
+          // console.log(response.data)
 
         } catch (error) {
           toast.error('Something went wrong!')

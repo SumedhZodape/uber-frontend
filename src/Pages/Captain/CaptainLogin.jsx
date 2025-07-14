@@ -26,10 +26,10 @@ export default function CaptainLogin() {
       const response = res.data;
       if(response){
         if(response.success === true){
-           connectSocket(response.userID)
+          connectSocket(response.userID)
           toast.success(response.message);
           localStorage.setItem('token', response.token);
-          localStorage.setItem('captainId', response.userID)
+          localStorage.setItem('userID', response.userID)
           reset({})
           navigate('/captain-home')
         }else{

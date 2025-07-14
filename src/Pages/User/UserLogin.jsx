@@ -28,7 +28,8 @@ export default function UserLogin() {
         if(response.success === true){
           connectSocket(response.userID)
           toast.success(response.message);
-          localStorage.setItem('token', response.token)
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('userID', response.userID);
           reset({})
           navigate('/user-home')
         }else{
